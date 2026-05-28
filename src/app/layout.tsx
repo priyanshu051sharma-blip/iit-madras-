@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: 'DriveLegal - AI-Powered Road Safety Dashboard',
   description: 'Enterprise-grade platform for traffic laws, challans, and road safety',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/favicon.svg',
   },
 }
 

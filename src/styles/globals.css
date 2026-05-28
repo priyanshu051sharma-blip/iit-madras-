@@ -2,13 +2,40 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+:root {
+  /* Light theme variables (high contrast) */
+  --bg: #f4f7fb; /* slightly warmer light gray */
+  --surface: #ffffff;
+  --text: #051023; /* darker for headings/body */
+  --muted: #475569; /* stronger muted text for readability */
+  --primary: #1e40af; /* stronger primary */
+  --primary-contrast: #ffffff;
+  --card-border: rgba(15,23,42,0.12);
+  --glass-bg: rgba(255,255,255,0.85);
+}
+
+.dark {
+  /* Dark theme variables (improved contrast) */
+  --bg: #0b1220; /* deep neutral for background */
+  --surface: #0f1724; /* card surface */
+  --text: #e6eef8; /* high contrast text */
+  --muted: #94a3b8;
+  --primary: #60a5fa; /* lighter primary on dark */
+  --primary-contrast: #0b1220;
+  --card-border: rgba(255,255,255,0.04);
+  --glass-bg: rgba(15,23,36,0.6);
+}
+
 @layer base {
   html {
     @apply scroll-smooth;
   }
 
   body {
-    @apply bg-dark-50 text-dark-900 dark:bg-dark-900 dark:text-dark-50;
+    background-color: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1,
@@ -17,37 +44,67 @@
   h4,
   h5,
   h6 {
-    @apply font-semibold text-dark-900 dark:text-dark-50;
+    @apply font-semibold;
+    color: var(--text);
   }
 }
 
 @layer components {
   .card {
-    @apply rounded-2xl border border-dark-200 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-md dark:border-dark-700 dark:bg-dark-800;
+    border-radius: 1rem;
+    border: 1px solid var(--card-border);
+    background-color: var(--surface);
+    padding: 1.5rem;
+    box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+    transition: box-shadow 200ms, transform 200ms;
   }
 
   .card-hover {
-    @apply card hover:shadow-lg hover:border-primary-500 hover:scale-105 dark:hover:border-primary-500;
+    display: inline-block;
+    transition: transform 200ms, border-color 200ms, box-shadow 200ms;
   }
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-200 outline-none pointer-events-auto cursor-pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: transform 150ms, box-shadow 150ms, background-color 150ms;
+    cursor: pointer;
+    outline: none;
   }
 
   .btn-primary {
-    @apply btn bg-primary-600 text-white shadow-md hover:bg-primary-700 hover:shadow-lg hover:scale-105 active:scale-95 disabled:bg-dark-400 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100 pointer-events-auto;
+    background-color: var(--primary);
+    color: var(--primary-contrast);
+    padding: 0.5rem 1rem;
+    box-shadow: 0 6px 18px rgba(2,6,23,0.08);
   }
 
+.btn-primary:hover {
+  transform: translateY(-2px);
+}
+
   .btn-secondary {
-    @apply btn border-2 border-dark-300 bg-white text-dark-900 shadow-sm hover:bg-dark-50 hover:shadow-md hover:border-primary-500 active:scale-95 dark:border-dark-600 dark:bg-dark-800 dark:text-dark-50 dark:hover:bg-dark-700 dark:hover:border-primary-500 pointer-events-auto;
+    border: 2px solid var(--card-border);
+    background-color: var(--surface);
+    color: var(--text);
+    padding: 0.45rem 0.95rem;
   }
 
   .btn-ghost {
-    @apply btn text-dark-600 hover:bg-dark-100 hover:text-dark-900 active:scale-95 dark:text-dark-300 dark:hover:bg-dark-700 dark:hover:text-dark-100 pointer-events-auto;
+    background: transparent;
+    color: var(--muted);
+    padding: 0.4rem 0.8rem;
   }
 
   .btn-danger {
-    @apply btn bg-danger-600 text-white shadow-md hover:bg-danger-700 hover:shadow-lg hover:scale-105 active:scale-95 disabled:bg-dark-400 pointer-events-auto;
+    background-color: #ef4444;
+    color: #fff;
+    padding: 0.45rem 0.9rem;
+    box-shadow: 0 6px 18px rgba(231,66,66,0.08);
   }
 
   .btn-lg {
@@ -63,7 +120,19 @@
   }
 
   .input {
-    @apply w-full rounded-lg border border-dark-200 bg-white px-3 py-2 text-sm text-dark-900 placeholder-dark-400 transition-all duration-200 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-10 dark:border-dark-600 dark:bg-dark-800 dark:text-dark-50 dark:placeholder-dark-500;
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid var(--card-border);
+    background-color: var(--surface);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    color: var(--text);
+  }
+
+.input:focus {
+  box-shadow: 0 0 0 4px rgba(99,102,241,0.12);
+  border-color: var(--primary);
+  outline: none;
   }
 
   .badge {
@@ -71,7 +140,8 @@
   }
 
   .badge-success {
-    @apply badge bg-success-100 text-success-800 dark:bg-success-900 dark:text-success-200;
+    background-color: #e6ffed;
+    color: #065f46;
   }
 
   .badge-warning {
@@ -88,11 +158,13 @@
 
   /* Premium utilities */
   .glass {
-    @apply bg-white/80 backdrop-blur-md border border-white/20 dark:bg-dark-800/80 dark:border-dark-700/20;
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--card-border);
   }
 
   .gradient-primary {
-    @apply bg-gradient-to-br from-primary-600 to-primary-700;
+    background-image: linear-gradient(135deg, var(--primary), #2563eb);
   }
 
   .gradient-premium {
@@ -104,10 +176,215 @@
   }
 
   .card-premium {
-    @apply rounded-2xl border border-dark-200 bg-gradient-to-br from-white to-dark-50 p-6 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 dark:border-dark-700 dark:from-dark-800 dark:to-dark-900;
+    border-radius: 1rem;
+    border: 1px solid var(--card-border);
+    background: linear-gradient(180deg, var(--surface), rgba(0,0,0,0.02));
+    padding: 1.5rem;
+    box-shadow: 0 12px 30px rgba(2,6,23,0.08);
   }
+
+/* Readability improvements */
+html { font-size: 16px; }
+html, body { line-height: 1.75; }
+
+/* Slightly larger base for better legibility */
+body { font-size: 17px; }
+
+/* Headings larger and more prominent */
+h1 { font-size: 2.25rem; letter-spacing: -0.02em; font-weight: 700; }
+h2 { font-size: 1.75rem; font-weight: 700; }
+h3 { font-size: 1.25rem; font-weight: 700; }
+
+/* Sidebar contrast and nav readability */
+/* Make sidebar visually distinct and high-contrast */
+
+/* Sidebar: light by default, dark in `.dark` mode */
+aside {
+  background-color: var(--surface);
+  color: var(--muted);
+  border-right: 1px solid rgba(15,23,42,0.06);
+}
+
+.dark aside {
+  background-color: #0f1724;
+  color: var(--text);
+  border-right: 1px solid rgba(255,255,255,0.03);
+}
+
+/* Nav item styles adapt to theme */
+aside a svg { color: rgba(15,23,42,0.6); }
+aside a span { color: var(--muted); font-weight: 600; }
+.dark aside a svg { color: #94a3b8; }
+.dark aside a span { color: #e6eef8; }
+
+/* Active / hover states */
+aside a.bg-primary-600, aside a[data-active='true'] {
+  background-color: var(--primary) !important;
+  color: var(--primary-contrast) !important;
+  box-shadow: 0 8px 28px rgba(30,64,175,0.18);
+}
+
+aside a:hover { background-color: rgba(15,23,42,0.04); }
+
+/* Mobile-specific: make the overlay sidebar clearer and less washed-out */
+@media (max-width: 1023px) {
+  /* Use a dark, high-contrast panel for the mobile sidebar to avoid washed-out look */
+  aside {
+    background-color: #0b1220 !important;
+    color: #e6eef8 !important;
+    backdrop-filter: none !important;
+    box-shadow: 0 40px 80px rgba(2,6,23,0.18) !important;
+    padding-top: 1.5rem !important;
+  }
+
+  /* Nav items: readable, opaque, and spaced */
+  aside a {
+    color: rgba(230,238,248,0.95) !important;
+    background: transparent !important;
+    padding: 0.65rem 0.9rem !important;
+    border-radius: 0.75rem !important;
+    margin: 0.35rem 0 !important;
+    display: flex;
+    align-items: center;
+    opacity: 0.95 !important;
+  }
+
+  aside a svg { color: rgba(148,163,184,0.95) !important; }
+  aside a span { color: rgba(230,238,248,0.96) !important; }
+
+  aside a:hover {
+    background-color: rgba(255,255,255,0.03) !important;
+  }
+
+  aside a.bg-primary-600, aside a[data-active='true'] {
+    background-color: var(--primary) !important;
+    color: var(--primary-contrast) !important;
+    box-shadow: 0 18px 36px rgba(30,64,175,0.22) !important;
+    transform: translateY(-1px);
+  }
+
+  /* Footer card on mobile: dark translucent surface */
+  aside .absolute {
+    background-color: rgba(255,255,255,0.03) !important;
+    border-radius: 0.75rem !important;
+    padding: 0.85rem !important;
+    color: rgba(230,238,248,0.85) !important;
+  }
+}
+
+aside .mb-8 span {
+  color: var(--text);
+}
+
+aside a {
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Ensure active nav uses the primary variable */
+aside a.bg-primary-600,
+aside a[data-active='true'] {
+  background-color: var(--primary) !important;
+  color: var(--primary-contrast) !important;
+  box-shadow: 0 8px 20px rgba(30,64,175,0.12);
+}
+
+/* Make nav icons and labels more legible */
+aside a svg { color: #94a3b8; }
+aside a span { color: #e6eef8; font-weight: 600; }
+
+/* Active nav emphasis */
+aside a.bg-primary-600, aside a[data-active='true'] {
+  background-color: var(--primary) !important;
+  color: var(--primary-contrast) !important;
+  box-shadow: 0 8px 28px rgba(30,64,175,0.18);
+}
+
+/* Hover for nav items */
+aside a:hover { background-color: rgba(255,255,255,0.03); }
+
+/* Cards and panels: ensure readable text and muted metadata */
+.card,
+.card-premium,
+.glass {
+  color: var(--text);
+}
+
+/* Make card headings and labels more prominent */
+.card h2, .card h3, .card .card-title { color: var(--text); font-weight: 700; }
+.card p, .card small, .card .muted { color: var(--muted); }
+
+/* Make cards slightly elevated from page background for both themes */
+.card { background-color: rgba(255,255,255,0.96); }
+.dark .card { background-color: rgba(15,23,36,0.9); }
+
+.card small,
+.card .muted,
+.card p,
+.card .label {
+  color: var(--muted);
+}
+
+/* Improve summary and sidebar footer contrast */
+.card .summary,
+aside .absolute p {
+  color: var(--muted);
+}
+
+/* Focus outlines for keyboard users */
+a:focus, button:focus, input:focus {
+  outline: 3px solid rgba(99,102,241,0.18);
+  outline-offset: 2px;
+}
+
+/* Make small text slightly larger for legibility */
+.text-xs { font-size: 0.85rem; }
+
 
   .animation-pulse-soft {
     @apply animate-pulse;
   }
+}
+
+/* Improve quick-question buttons and input placeholders for readability */
+.card .block.w-full.rounded-lg,
+.card button.block.w-full.rounded-lg {
+  background-color: #f8fafc !important; /* very light for quick questions */
+  border: 1px solid rgba(15,23,42,0.06) !important;
+  color: rgba(7,20,35,0.9) !important;
+  padding: 0.6rem 0.75rem !important;
+  text-align: left !important;
+  font-size: 0.95rem !important;
+}
+
+.card .block.w-full.rounded-lg:hover,
+.card button.block.w-full.rounded-lg:hover {
+  background-color: rgba(30,64,175,0.06) !important;
+  border-color: rgba(30,64,175,0.12) !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: rgba(7,20,35,0.45) !important;
+}
+
+/* Chat message assistant bubble contrast */
+.card .bg-dark-100 {
+  /* assistant message bubble (light theme) */
+  background-color: #eef2f7 !important; /* subtle cool gray */
+  color: var(--text) !important;
+  border: 1px solid rgba(15,23,42,0.04) !important;
+}
+
+/* assistant dark bubble */
+.dark .card .dark\:bg-dark-700 {
+  background-color: #0f1724 !important;
+  color: var(--text) !important;
+  border: 1px solid rgba(255,255,255,0.03) !important;
+}
+
+/* Make header icons more visible on light background */
+header svg, .topbar svg {
+  color: rgba(7,20,35,0.8) !important;
 }

@@ -29,7 +29,6 @@ const navigation = [
   { name: 'Violation Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Live Alerts', href: '/alerts', icon: AlertCircle },
   { name: 'Geo-Zones', href: '/geo-zones', icon: MapPin },
-  { name: 'Emergency SOS', href: '/emergency', icon: ShieldAlert },
   { name: 'Documents', href: '/documents', icon: FileText },
   { name: 'Police Portal', href: '/police-portal', icon: Users },
   { name: 'Offline Sync', href: '/sync', icon: HardDrive },

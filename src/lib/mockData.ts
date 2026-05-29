@@ -13,10 +13,10 @@ import type {
 
 export const currentUser: User = {
   id: 'user_001',
-  name: 'Rajesh Kumar',
-  email: 'rajesh.kumar@example.com',
+  name: 'User',
+  email: 'user@example.com',
   role: 'citizen',
-  avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Rajesh',
+  avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=User',
   location: 'Bangalore, Karnataka',
   language: 'English',
 }

@@ -9,10 +9,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setMounted(true)
-    // Check system preference
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
     const saved = localStorage.getItem('theme')
-    const theme = saved || (prefersDark ? 'dark' : 'light')
+    const theme = saved || 'light'
     setIsDark(theme === 'dark')
   }, [])
 

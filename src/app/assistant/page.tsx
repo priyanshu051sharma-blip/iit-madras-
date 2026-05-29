@@ -1,10 +1,11 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Send, Paperclip, Mic, Copy, ThumbsUp, ThumbsDown, BookOpen } from 'lucide-react'
+import { Send, Paperclip, Mic, Copy, ThumbsUp, ThumbsDown, BookOpen, ShieldCheck, FileSearch } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/components/Card'
 import { Button } from '@/components/Button'
 import { Badge } from '@/components/Badge'
+import { trafficLaws } from '@/lib/mockData'
 
 const initialMessages = [
   {
@@ -20,6 +21,24 @@ export default function AssistantPage() {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [selectedCitation, setSelectedCitation] = useState<any>(null)
+
+  const getRelevantLaws = (query: string) => {
+    const normalized = query.toLowerCase()
+
+    if (normalized.includes('helmet')) {
+      return trafficLaws.filter((law) => law.relatedSections.includes('129'))
+    }
+
+    if (normalized.includes('speed')) {
+      return trafficLaws.filter((law) => law.relatedSections.includes('188'))
+    }
+
+    if (normalized.includes('parking')) {
+      return trafficLaws.filter((law) => law.relatedSections.includes('173'))
+    }
+
+    return trafficLaws.slice(0, 2)
+  }
 
   const handleSend = async () => {
     if (!input.trim()) return
@@ -37,32 +56,27 @@ export default function AssistantPage() {
 
     // Simulate AI response
     setTimeout(() => {
+      const relevantLaws = getRelevantLaws(input)
       const assistantMessage = {
         id: `msg_${Date.now() + 1}`,
         role: 'assistant' as const,
-        content: 'Thank you for your question. Based on Karnataka traffic regulations, ' +
+        content:
+          'Thank you for your question. Based on the cited law sections, ' +
           (input.toLowerCase().includes('helmet')
-            ? 'wearing a helmet is mandatory for motorcycle riders. Non-compliance attracts a fine of ₹100 and possible imprisonment up to 3 months.'
+            ? 'wearing a helmet is mandatory for motorcycle riders under the Motor Vehicles Act and related state rules. Non-compliance may attract a fine and enforcement action.'
             : input.toLowerCase().includes('speed')
-            ? 'the speed limit varies by road type - 40 km/h in residential areas, 60 km/h in urban areas, and 80 km/h on highways. Exceeding limits can result in fines up to ₹500.'
-            : 'I recommend checking the complete Motor Vehicles Act, 1988 for comprehensive legal information.'),
+            ? 'speeding penalties depend on road type and local enforcement rules. Always verify the posted limit before driving.'
+            : 'I recommend checking the referenced sections of the Motor Vehicles Act and the applicable state amendment before acting on the advice.'),
         timestamp: new Date().toISOString(),
-        citations: [
-          {
-            id: 'cite_001',
-            title: 'Motor Vehicles Act, 1988',
-            source: 'Central Government',
-            state: 'India',
-            relevance: 0.95,
-          },
-          {
-            id: 'cite_002',
-            title: 'Karnataka Traffic Rules 2017',
-            source: 'Karnataka Government',
-            state: 'Karnataka',
-            relevance: 0.88,
-          },
-        ],
+        citations: relevantLaws.map((law) => ({
+          id: law.id,
+          title: law.title,
+          source: law.source,
+          state: law.state,
+          relevance: 0.9,
+          sections: law.relatedSections,
+          amendmentDate: law.amendmentDate || 'State amendment varies',
+        })),
       }
 
       setMessages((prev) => [...prev, assistantMessage])
@@ -82,11 +96,34 @@ export default function AssistantPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">AI Legal Assistant</h1>
-        <p className="mt-1 text-dark-600 dark:text-dark-400">
+        <h1 className="text-3xl font-bold text-primary-700 dark:text-primary-300">AI Legal Assistant</h1>
+        <p className="mt-1 max-w-3xl text-dark-700 dark:text-dark-300">
           Ask questions about traffic laws, fines, and road safety regulations
         </p>
       </div>
+
+      <Card className="border border-success-100 bg-white/95 dark:border-dark-700 dark:bg-dark-800">
+        <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="flex items-start gap-3">
+            <ShieldCheck className="mt-0.5 text-success-600 dark:text-success-400" size={20} />
+            <div>
+              <p className="font-semibold text-dark-900 dark:text-white">Legal accuracy</p>
+              <p className="text-sm text-dark-600 dark:text-dark-300">
+                Responses are tied to actual Motor Vehicles Act sections and state amendments shown in the citations.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <FileSearch className="mt-0.5 text-primary-600 dark:text-primary-300" size={20} />
+            <div>
+              <p className="font-semibold text-dark-900 dark:text-white">Traceable sources</p>
+              <p className="text-sm text-dark-600 dark:text-dark-300">
+                Every answer includes section references so users can verify the legal basis quickly.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Chat Section */}
@@ -128,6 +165,24 @@ export default function AssistantPage() {
                         <button className="rounded p-1 hover:bg-dark-200 dark:hover:bg-dark-600">
                           <Copy size={14} />
                         </button>
+                      </div>
+                    )}
+                    {message.role === 'assistant' && message.citations && (
+                      <div className="mt-3 space-y-2 border-t border-dark-200 pt-3 dark:border-dark-600">
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-dark-500 dark:text-dark-400">
+                          Cited sections
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {message.citations.map((citation: any) => (
+                            <button
+                              key={citation.id}
+                              onClick={() => setSelectedCitation(citation)}
+                              className="rounded-full border border-primary-200 bg-primary-50 px-3 py-1 text-[11px] font-medium text-primary-700 transition hover:bg-primary-100 dark:border-primary-900 dark:bg-primary-900/30 dark:text-primary-200 dark:hover:bg-primary-900/50"
+                            >
+                              {citation.title} · Sec. {citation.sections?.join(', ') || 'N/A'}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -201,7 +256,7 @@ export default function AssistantPage() {
 
           {/* Legal References */}
           <Card>
-            <CardHeader title="Legal References" subtitle="Important Acts & Rules" />
+            <CardHeader title="Legal References" subtitle="Important Acts, sections, and state rules" />
             <CardContent>
               <div className="space-y-3">
                 <div className="rounded-lg bg-dark-50 p-3 dark:bg-dark-700">
@@ -209,7 +264,7 @@ export default function AssistantPage() {
                     <BookOpen size={16} className="mt-0.5 flex-shrink-0 text-primary-600" />
                     <div>
                       <p className="text-sm font-medium">Motor Vehicles Act, 1988</p>
-                      <p className="text-xs text-dark-600 dark:text-dark-400">Central Government</p>
+                      <p className="text-xs text-dark-600 dark:text-dark-400">Central Government · Sections 129, 173, 188, 336</p>
                     </div>
                   </div>
                 </div>
@@ -219,7 +274,7 @@ export default function AssistantPage() {
                     <BookOpen size={16} className="mt-0.5 flex-shrink-0 text-primary-600" />
                     <div>
                       <p className="text-sm font-medium">Karnataka Traffic Rules</p>
-                      <p className="text-xs text-dark-600 dark:text-dark-400">Karnataka Government</p>
+                      <p className="text-xs text-dark-600 dark:text-dark-400">Karnataka Government · State amendments included</p>
                     </div>
                   </div>
                 </div>

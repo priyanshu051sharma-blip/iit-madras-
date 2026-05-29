@@ -4,7 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { BarChart3, AlertCircle, TrendingDown, Users, Shield, AlertTriangle, MapPin } from 'lucide-react'
+import { BarChart3, AlertCircle, TrendingDown, Users, Shield, AlertTriangle, MapPin, Database, BookCheck, WifiOff, RefreshCcw } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/components/Card'
 import { AnimatedCard } from '@/components/AnimatedCard'
 import { Badge } from '@/components/Badge'
@@ -142,7 +142,6 @@ export default function OverviewPage() {
           {[
             { href: '/laws', icon: '⚖️', label: 'Check Traffic Law' },
             { href: '/calculator', icon: '🧮', label: 'Calculate Challan' },
-            { href: '/emergency', icon: '🚨', label: 'Emergency SOS' },
             { href: '/assistant', icon: '🤖', label: 'AI Legal Chat' },
             { href: '/documents', icon: '📄', label: 'Upload Document' },
             { href: '/geo-zones', icon: '📍', label: 'Safe Routes' },
@@ -160,6 +159,50 @@ export default function OverviewPage() {
             </Link>
           ))}
         </motion.div>
+      </motion.div>
+
+      {/* Platform Capabilities */}
+      <motion.div variants={itemVariants}>
+        <h2 className="mb-4 text-2xl font-bold">Platform Capabilities</h2>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <AnimatedCard interactive elevated>
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-200">
+                <Database size={22} />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-dark-900 dark:text-white">Offline Functionality</h3>
+                <p className="mt-1 text-sm text-dark-600 dark:text-dark-300">
+                  Full offline access with cached law data and automatic sync when connectivity is restored.
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Badge variant="primary">Cached laws</Badge>
+                  <Badge variant="neutral">Auto-sync</Badge>
+                  <Badge variant="success">Offline ready</Badge>
+                </div>
+              </div>
+            </div>
+          </AnimatedCard>
+
+          <AnimatedCard interactive elevated>
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-success-100 text-success-700 dark:bg-success-900 dark:text-success-200">
+                <BookCheck size={22} />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-dark-900 dark:text-white">Legal Accuracy</h3>
+                <p className="mt-1 text-sm text-dark-600 dark:text-dark-300">
+                  AI-cited responses are tied to Motor Vehicles Act sections and state amendments for traceable answers.
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Badge variant="primary">Section citations</Badge>
+                  <Badge variant="warning">State amendments</Badge>
+                  <Badge variant="neutral">Traceable responses</Badge>
+                </div>
+              </div>
+            </div>
+          </AnimatedCard>
+        </div>
       </motion.div>
 
       {/* Live Metrics Section */}

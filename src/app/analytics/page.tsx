@@ -39,8 +39,10 @@ export default function AnalyticsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Violation Analytics</h1>
-          <p className="mt-1 text-dark-600 dark:text-dark-400">
+          <h1 className="text-3xl font-bold text-primary-700 dark:text-primary-300">
+            Violation Analytics
+          </h1>
+          <p className="mt-1 max-w-2xl text-dark-700 dark:text-dark-300">
             Track traffic violations and enforcement trends
           </p>
         </div>
@@ -49,43 +51,51 @@ export default function AnalyticsPage() {
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="border border-primary-100 bg-gradient-to-br from-white via-blue-50/70 to-white dark:border-dark-700 dark:from-dark-800 dark:via-dark-800 dark:to-dark-700">
           <div>
-            <p className="text-sm text-dark-600 dark:text-dark-400">Total Violations</p>
-            <p className="mt-2 text-3xl font-bold">{formatNumber(analyticsData.totalViolations)}</p>
-            <p className="mt-1 flex items-center gap-1 text-xs text-danger-600">
+            <p className="text-sm font-medium text-dark-700 dark:text-dark-300">Total Violations</p>
+            <p className="mt-2 text-3xl font-bold text-dark-900 dark:text-white">
+              {formatNumber(analyticsData.totalViolations)}
+            </p>
+            <p className="mt-1 flex items-center gap-1 text-xs text-danger-600 dark:text-danger-400">
               <TrendingUp size={12} /> +12% from last month
             </p>
           </div>
         </Card>
 
-        <Card>
+        <Card className="border border-sky-100 bg-gradient-to-br from-white via-sky-50/70 to-white dark:border-dark-700 dark:from-dark-800 dark:via-dark-800 dark:to-dark-700">
           <div>
-            <p className="text-sm text-dark-600 dark:text-dark-400">Average Fine</p>
-            <p className="mt-2 text-3xl font-bold">₹{formatNumber(analyticsData.avgFineAmount)}</p>
+            <p className="text-sm font-medium text-dark-700 dark:text-dark-300">Average Fine</p>
+            <p className="mt-2 text-3xl font-bold text-dark-900 dark:text-white">
+              ₹{formatNumber(analyticsData.avgFineAmount)}
+            </p>
             <p className="mt-1 text-xs text-dark-600 dark:text-dark-400">Per violation</p>
           </div>
         </Card>
 
-        <Card>
+        <Card className="border border-emerald-100 bg-gradient-to-br from-white via-emerald-50/70 to-white dark:border-dark-700 dark:from-dark-800 dark:via-dark-800 dark:to-dark-700">
           <div>
-            <p className="text-sm text-dark-600 dark:text-dark-400">Compliance Rate</p>
-            <p className="mt-2 text-3xl font-bold">{analyticsData.complianceRate}%</p>
-            <p className="mt-1 text-xs text-success-600">Citizens compliance</p>
+            <p className="text-sm font-medium text-dark-700 dark:text-dark-300">Compliance Rate</p>
+            <p className="mt-2 text-3xl font-bold text-dark-900 dark:text-white">
+              {analyticsData.complianceRate}%
+            </p>
+            <p className="mt-1 text-xs text-success-600 dark:text-success-400">Citizens compliance</p>
           </div>
         </Card>
 
-        <Card>
+        <Card className="border border-amber-100 bg-gradient-to-br from-white via-amber-50/70 to-white dark:border-dark-700 dark:from-dark-800 dark:via-dark-800 dark:to-dark-700">
           <div>
-            <p className="text-sm text-dark-600 dark:text-dark-400">Enforcement Zones</p>
-            <p className="mt-2 text-3xl font-bold">{analyticsData.enforcementZones}</p>
-            <p className="mt-1 text-xs text-primary-600">Active zones</p>
+            <p className="text-sm font-medium text-dark-700 dark:text-dark-300">Enforcement Zones</p>
+            <p className="mt-2 text-3xl font-bold text-dark-900 dark:text-white">
+              {analyticsData.enforcementZones}
+            </p>
+            <p className="mt-1 text-xs text-primary-600 dark:text-primary-300">Active zones</p>
           </div>
         </Card>
       </div>
 
       {/* Filters */}
-      <Card>
+      <Card className="border border-primary-100 bg-white/95 shadow-elevation dark:border-dark-700 dark:bg-dark-800">
         <CardContent className="flex flex-wrap gap-2">
           {['7d', '30d', '90d', 'ytd'].map((range) => (
             <Button
@@ -106,7 +116,7 @@ export default function AnalyticsPage() {
       {/* Charts Section */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Trends Chart */}
-        <Card>
+        <Card className="border border-primary-100 bg-white/95 shadow-elevation dark:border-dark-700 dark:bg-dark-800">
           <CardHeader
             title="Violation Trends"
             subtitle="Weekly violation patterns"
@@ -137,7 +147,7 @@ export default function AnalyticsPage() {
         </Card>
 
         {/* Fine Amount Chart */}
-        <Card>
+        <Card className="border border-emerald-100 bg-white/95 shadow-elevation dark:border-dark-700 dark:bg-dark-800">
           <CardHeader
             title="Fine Collection"
             subtitle="Weekly fine amounts"
@@ -159,7 +169,7 @@ export default function AnalyticsPage() {
 
       {/* Violation Distribution */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Card>
+        <Card className="border border-violet-100 bg-white/95 shadow-elevation dark:border-dark-700 dark:bg-dark-800">
           <CardHeader
             title="Violation Types Distribution"
             subtitle="Breakdown by type"
@@ -188,7 +198,7 @@ export default function AnalyticsPage() {
         </Card>
 
         {/* Violation List */}
-        <Card>
+        <Card className="border border-sky-100 bg-white/95 shadow-elevation dark:border-dark-700 dark:bg-dark-800">
           <CardHeader
             title="Top Violation Types"
             subtitle="Most common violations"
@@ -221,7 +231,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* High-Risk Areas */}
-      <Card>
+      <Card className="border border-primary-100 bg-white/95 shadow-elevation dark:border-dark-700 dark:bg-dark-800">
         <CardHeader
           title="High-Risk Enforcement Zones"
           subtitle="Areas with most violations and accidents"

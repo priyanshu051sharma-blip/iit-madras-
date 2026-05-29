@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Download, Upload, CheckCircle, Clock } from 'lucide-react'
+import { Download, Upload, CheckCircle, Clock, WifiOff, Database, RefreshCcw } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/components/Card'
 import { Button } from '@/components/Button'
 import { Badge } from '@/components/Badge'
@@ -12,14 +12,40 @@ export default function SyncPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Offline Sync</h1>
+        <h1 className="text-3xl font-bold text-primary-700 dark:text-primary-300">Offline Sync</h1>
         <p className="mt-1 text-dark-600 dark:text-dark-400">
-          Synchronize data for offline access and reliability
+          Cached law data stays available offline and syncs automatically when connectivity returns
         </p>
       </div>
 
+      <Card className="border border-primary-100 bg-white/95 dark:border-dark-700 dark:bg-dark-800">
+        <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="rounded-xl bg-primary-50 p-4 dark:bg-primary-900/30">
+            <WifiOff className="text-primary-700 dark:text-primary-300" size={22} />
+            <p className="mt-3 font-semibold text-dark-900 dark:text-white">Offline Access</p>
+            <p className="mt-1 text-sm text-dark-600 dark:text-dark-300">
+              View laws, challans, and document records without an internet connection.
+            </p>
+          </div>
+          <div className="rounded-xl bg-success-50 p-4 dark:bg-success-900/20">
+            <Database className="text-success-700 dark:text-success-300" size={22} />
+            <p className="mt-3 font-semibold text-dark-900 dark:text-white">Cached Law Data</p>
+            <p className="mt-1 text-sm text-dark-600 dark:text-dark-300">
+              Frequently used Motor Vehicles Act sections and state rules are stored locally.
+            </p>
+          </div>
+          <div className="rounded-xl bg-warning-50 p-4 dark:bg-warning-900/20">
+            <RefreshCcw className="text-warning-700 dark:text-warning-300" size={22} />
+            <p className="mt-3 font-semibold text-dark-900 dark:text-white">Sync Recovery</p>
+            <p className="mt-1 text-sm text-dark-600 dark:text-dark-300">
+              Changes queue locally and sync automatically once connectivity is restored.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
-        <CardHeader title="Sync Status" />
+        <CardHeader title="Sync Status" subtitle="Offline-first content is ready for use" />
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="rounded-lg bg-dark-50 p-4 dark:bg-dark-700">

@@ -21,6 +21,7 @@ export default function AssistantPage() {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [selectedCitation, setSelectedCitation] = useState<any>(null)
+  const [selectedCitationDetails, setSelectedCitationDetails] = useState<any>(null)
 
   const getRelevantLaws = (query: string) => {
     const normalized = query.toLowerCase()
@@ -176,7 +177,17 @@ export default function AssistantPage() {
                           {message.citations.map((citation: any) => (
                             <button
                               key={citation.id}
-                              onClick={() => setSelectedCitation(citation)}
+                              onClick={async () => {
+                                setSelectedCitation(citation)
+                                try {
+                                  const res = await fetch(`/api/laws/${citation.id}`)
+                                  const body = await res.json()
+                                  setSelectedCitationDetails(body.law || null)
+                                } catch (e) {
+                                  console.warn('Fetch citation failed', e)
+                                  setSelectedCitationDetails(null)
+                                }
+                              }}
                               className="rounded-full border border-primary-200 bg-primary-50 px-3 py-1 text-[11px] font-medium text-primary-700 transition hover:bg-primary-100 dark:border-primary-900 dark:bg-primary-900/30 dark:text-primary-200 dark:hover:bg-primary-900/50"
                             >
                               {citation.title} · Sec. {citation.sections?.join(', ') || 'N/A'}
@@ -255,36 +266,48 @@ export default function AssistantPage() {
           </Card>
 
           {/* Legal References */}
-          <Card>
-            <CardHeader title="Legal References" subtitle="Important Acts, sections, and state rules" />
-            <CardContent>
-              <div className="space-y-3">
-                <div className="rounded-lg bg-dark-50 p-3 dark:bg-dark-700">
-                  <div className="flex items-start gap-2">
-                    <BookOpen size={16} className="mt-0.5 flex-shrink-0 text-primary-600" />
-                    <div>
-                      <p className="text-sm font-medium">Motor Vehicles Act, 1988</p>
-                      <p className="text-xs text-dark-600 dark:text-dark-400">Central Government · Sections 129, 173, 188, 336</p>
+            {selectedCitationDetails ? (
+              <Card>
+                <CardHeader title="Citation Details" subtitle={selectedCitationDetails.source || 'Source'} />
+                <CardContent>
+                  <p className="font-semibold">{selectedCitationDetails.title}</p>
+                  <p className="text-sm text-dark-600 dark:text-dark-400 mt-2">{selectedCitationDetails.description}</p>
+                  <p className="text-xs text-dark-500 dark:text-dark-400 mt-3">State: {selectedCitationDetails.state}</p>
+                  <p className="text-xs text-dark-500 dark:text-dark-400">Sections: {selectedCitationDetails.relatedSections?.join(', ')}</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardHeader title="Legal References" subtitle="Important Acts, sections, and state rules" />
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="rounded-lg bg-dark-50 p-3 dark:bg-dark-700">
+                      <div className="flex items-start gap-2">
+                        <BookOpen size={16} className="mt-0.5 flex-shrink-0 text-primary-600" />
+                        <div>
+                          <p className="text-sm font-medium">Motor Vehicles Act, 1988</p>
+                          <p className="text-xs text-dark-600 dark:text-dark-400">Central Government · Sections 129, 173, 188, 336</p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
 
-                <div className="rounded-lg bg-dark-50 p-3 dark:bg-dark-700">
-                  <div className="flex items-start gap-2">
-                    <BookOpen size={16} className="mt-0.5 flex-shrink-0 text-primary-600" />
-                    <div>
-                      <p className="text-sm font-medium">Karnataka Traffic Rules</p>
-                      <p className="text-xs text-dark-600 dark:text-dark-400">Karnataka Government · State amendments included</p>
+                    <div className="rounded-lg bg-dark-50 p-3 dark:bg-dark-700">
+                      <div className="flex items-start gap-2">
+                        <BookOpen size={16} className="mt-0.5 flex-shrink-0 text-primary-600" />
+                        <div>
+                          <p className="text-sm font-medium">Karnataka Traffic Rules</p>
+                          <p className="text-xs text-dark-600 dark:text-dark-400">Karnataka Government · State amendments included</p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
 
-                <Button variant="secondary" className="w-full justify-center">
-                  View All References
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                    <Button variant="secondary" className="w-full justify-center">
+                      View All References
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
           {/* AI Features */}
           <Card>

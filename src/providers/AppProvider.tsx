@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { AppLayout } from '@/layouts/AppLayout'
+import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration'
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [isDark, setIsDark] = useState(false)
@@ -27,6 +28,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   return (
     <AppLayout isDark={isDark} onToggleDark={handleToggleDark}>
       {children}
+      <ServiceWorkerRegistration />
     </AppLayout>
   )
 }

@@ -30,3 +30,14 @@ export async function GET(request: Request) {
     )
   }
 }
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json()
+    // In production persist received law data to DB. Here we just echo.
+    console.log('Ingest laws:', Array.isArray(body.laws) ? body.laws.length : 0)
+    return NextResponse.json({ ingested: Array.isArray(body.laws) ? body.laws.length : 0 })
+  } catch (_err) {
+    return NextResponse.json({ error: 'Bad request' }, { status: 400 })
+  }
+}

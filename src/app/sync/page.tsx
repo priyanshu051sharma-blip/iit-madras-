@@ -1,13 +1,36 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Download, Upload, CheckCircle, Clock, WifiOff, Database, RefreshCcw } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/components/Card'
 import { Button } from '@/components/Button'
 import { Badge } from '@/components/Badge'
+import offline from '@/lib/offline'
+import { trafficLaws } from '@/lib/mockData'
 
 export default function SyncPage() {
   const [isSyncing, setIsSyncing] = useState(false)
+  const [cachedCount, setCachedCount] = useState(0)
+  const [outboxCount, setOutboxCount] = useState(0)
+
+  useEffect(() => {
+    let mounted = true
+    async function load() {
+      try {
+        const cached = await offline.getCachedLaws()
+        const outbox = await offline.getOutboxItems()
+        if (!mounted) return
+        setCachedCount(cached?.length || 0)
+        setOutboxCount(outbox?.length || 0)
+      } catch (e) {
+        console.warn('offline load failed', e)
+      }
+    }
+    load()
+    return () => {
+      mounted = false
+    }
+  }, [])
 
   return (
     <div className="space-y-6">
@@ -45,6 +68,25 @@ export default function SyncPage() {
       </Card>
 
       <Card>
+        <CardHeader title="Outbox" subtitle="Queued actions waiting for network" />
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <p className="text-sm">{outboxCount} queued item(s)</p>
+            <div className="flex gap-2">
+              <Button
+                onClick={async () => {
+                  const items = await offline.getOutboxItems()
+                  setOutboxCount(items.length)
+                }}
+              >
+                Refresh
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
         <CardHeader title="Sync Status" subtitle="Offline-first content is ready for use" />
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -60,7 +102,32 @@ export default function SyncPage() {
 
           <div className="flex gap-2">
             <Button
-              onClick={() => setIsSyncing(true)}
+              onClick={async () => {
+                setIsSyncing(true)
+                try {
+                  // Cache known laws (mock) locally
+                  await offline.cacheLaws(trafficLaws)
+                  setCachedCount((c) => c + (trafficLaws?.length || 0))
+
+                  // Attempt to flush the outbox when online
+                  if (navigator.onLine) {
+                    const outbox = await offline.getOutboxItems()
+                    if (outbox.length) {
+                      await fetch('/api/sync', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ items: outbox }),
+                      })
+                      await offline.clearOutbox()
+                      setOutboxCount(0)
+                    }
+                  }
+                } catch (e) {
+                  console.warn('Sync failed', e)
+                } finally {
+                  setIsSyncing(false)
+                }
+              }}
               loading={isSyncing}
               icon={<Download size={16} />}
               className="flex-1"

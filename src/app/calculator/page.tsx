@@ -7,6 +7,7 @@ import { Button } from '@/components/Button'
 import { Badge } from '@/components/Badge'
 import { formatCurrency, formatNumber } from '@/lib/utils'
 import { trafficLaws } from '@/lib/mockData'
+import { geoZones, getZoneFineMultiplier } from '@/lib/geo-rules'
 
 const states = ['Karnataka', 'Maharashtra', 'Delhi', 'Tamil Nadu', 'West Bengal']
 const vehicleTypes = ['Car', 'Motorcycle', 'Commercial Vehicle', 'Three-Wheeler']
@@ -25,6 +26,7 @@ export default function ChallanCalculatorPage() {
   const [step, setStep] = useState(1)
   const [state, setState] = useState(states[0])
   const [vehicleType, setVehicleType] = useState(vehicleTypes[0])
+  const [zoneId, setZoneId] = useState(geoZones[0].id)
   const [selectedViolations, setSelectedViolations] = useState<string[]>([])
   const [isRepeatOffender, setIsRepeatOffender] = useState(false)
 
@@ -34,6 +36,7 @@ export default function ChallanCalculatorPage() {
       const violation = violationTypes.find((vt) => vt.name === v)
       if (violation) {
         let fine = violation.baseFine
+        fine *= getZoneFineMultiplier(zoneId, v)
         if (isRepeatOffender) {
           fine *= 1.5
         }
@@ -69,7 +72,7 @@ export default function ChallanCalculatorPage() {
           <Card>
             <CardContent>
               <div className="flex items-center justify-between">
-                {[1, 2, 3, 4].map((s) => (
+                {[1, 2, 3, 4, 5].map((s) => (
                   <div key={s} className="flex flex-col items-center">
                     <button
                       onClick={() => setStep(s)}
@@ -82,7 +85,7 @@ export default function ChallanCalculatorPage() {
                       {s}
                     </button>
                     <p className="mt-2 text-xs font-medium">
-                      {['Select State', 'Vehicle', 'Violations', 'Review'][s - 1]}
+                      {['Select State', 'Geo-Zone', 'Vehicle', 'Violations', 'Review'][s - 1]}
                     </p>
                   </div>
                 ))}
@@ -121,8 +124,48 @@ export default function ChallanCalculatorPage() {
             </Card>
           )}
 
-          {/* Step 2: Vehicle Type */}
+          {/* Step 1.5: Geo-zone detection */}
           {step === 2 && (
+            <Card>
+              <CardHeader
+                title="Detect Geo-Zone"
+                subtitle="Pick the enforcement zone or use GPS-selected region before fine calculation"
+              />
+              <CardContent className="space-y-3">
+                {geoZones.map((zone) => (
+                  <button
+                    key={zone.id}
+                    onClick={() => {
+                      setZoneId(zone.id)
+                      setStep(3)
+                    }}
+                    className={`block w-full rounded-lg border-2 p-4 text-left transition-all ${
+                      zoneId === zone.id
+                        ? 'border-primary-600 bg-primary-50 dark:bg-dark-700'
+                        : 'border-dark-200 bg-white hover:border-primary-300 dark:border-dark-700 dark:bg-dark-800'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="font-semibold">{zone.name}</p>
+                        <p className="text-xs text-dark-600 dark:text-dark-400">{zone.description}</p>
+                        <p className="mt-2 text-xs text-dark-500 dark:text-dark-400">
+                          Speed limit: {zone.speedLimit} · Multiplier: {zone.fineMultiplier}x
+                        </p>
+                      </div>
+                      <Badge variant="warning">{zone.type}</Badge>
+                    </div>
+                  </button>
+                ))}
+                <p className="text-xs text-dark-500 dark:text-dark-400">
+                  School zones and accident hotspots automatically increase fines for relevant violations.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Step 2: Vehicle Type */}
+          {step === 3 && (
             <Card>
               <CardHeader title="Select Vehicle Type" subtitle="Choose the type of vehicle" />
               <CardContent>
@@ -153,7 +196,7 @@ export default function ChallanCalculatorPage() {
                     </button>
                   ))}
                 </div>
-                <Button onClick={() => setStep(3)} className="mt-4 w-full">
+                <Button onClick={() => setStep(4)} className="mt-4 w-full">
                   Continue
                 </Button>
               </CardContent>
@@ -161,7 +204,7 @@ export default function ChallanCalculatorPage() {
           )}
 
           {/* Step 3: Select Violations */}
-          {step === 3 && (
+          {step === 4 && (
             <Card>
               <CardHeader title="Select Violations" subtitle="Choose applicable traffic violations" />
               <CardContent className="space-y-3">
@@ -201,7 +244,7 @@ export default function ChallanCalculatorPage() {
                   </div>
                 </div>
 
-                <Button onClick={() => setStep(4)} className="w-full">
+                <Button onClick={() => setStep(5)} className="w-full">
                   Review Challan
                 </Button>
               </CardContent>
@@ -209,7 +252,7 @@ export default function ChallanCalculatorPage() {
           )}
 
           {/* Step 4: Review & Generate */}
-          {step === 4 && (
+          {step === 5 && (
             <Card>
               <CardHeader title="Review Challan" subtitle="Verify and generate official challan" />
               <CardContent className="space-y-4">
@@ -228,6 +271,10 @@ export default function ChallanCalculatorPage() {
                       <p className="font-semibold">{selectedViolations.length}</p>
                     </div>
                     <div>
+                      <p className="text-xs text-dark-600 dark:text-dark-400">Geo-Zone</p>
+                      <p className="font-semibold">{geoZones.find((z) => z.id === zoneId)?.type || 'Standard'}</p>
+                    </div>
+                    <div>
                       <p className="text-xs text-dark-600 dark:text-dark-400">Status</p>
                       <Badge variant={isRepeatOffender ? 'warning' : 'success'}>
                         {isRepeatOffender ? 'Repeat Offender' : 'First Time'}
@@ -240,7 +287,8 @@ export default function ChallanCalculatorPage() {
                   <h4 className="font-semibold">Violation Breakdown</h4>
                   {selectedViolations.map((v) => {
                     const violation = violationTypes.find((vt) => vt.name === v)
-                    const fine = violation ? violation.baseFine * (isRepeatOffender ? 1.5 : 1) : 0
+                    const geoMultiplier = getZoneFineMultiplier(zoneId, v)
+                    const fine = violation ? violation.baseFine * geoMultiplier * (isRepeatOffender ? 1.5 : 1) : 0
                     return (
                       <div key={v} className="flex justify-between text-sm">
                         <span>{v}</span>
@@ -253,6 +301,9 @@ export default function ChallanCalculatorPage() {
                       <span>Total Fine</span>
                       <span className="text-danger-600">{formatCurrency(totalFine)}</span>
                     </div>
+                    <p className="mt-2 text-xs text-dark-500 dark:text-dark-400">
+                      Geo-zone rules are applied before repeat-offender penalties.
+                    </p>
                   </div>
                 </div>
 
@@ -297,6 +348,12 @@ export default function ChallanCalculatorPage() {
                     {isRepeatOffender && (
                       <p className="mt-1 text-xs text-warning-600">+50% for repeat offense</p>
                     )}
+                  </div>
+
+                  <div className="rounded-lg bg-warning-50 p-3 dark:bg-dark-700">
+                    <p className="text-xs text-warning-800 dark:text-warning-200">
+                      Geo-zone active: {geoZones.find((z) => z.id === zoneId)?.type || 'Standard'}
+                    </p>
                   </div>
 
                   <div className="rounded-lg bg-success-50 p-3 dark:bg-dark-700">

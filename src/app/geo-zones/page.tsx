@@ -5,6 +5,7 @@ import { MapPin, AlertCircle, TrendingUp } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/components/Card'
 import { Button } from '@/components/Button'
 import { Badge } from '@/components/Badge'
+import { geoZones } from '@/lib/geo-rules'
 
 export default function GeoZonesPage() {
   return (
@@ -20,7 +21,7 @@ export default function GeoZonesPage() {
         <Card>
           <div>
             <p className="text-sm text-dark-600 dark:text-dark-400">Active Zones</p>
-            <p className="mt-2 text-3xl font-bold">42</p>
+            <p className="mt-2 text-3xl font-bold">{geoZones.length}</p>
           </div>
         </Card>
 
@@ -44,11 +45,7 @@ export default function GeoZonesPage() {
         <CardHeader title="Nearby Enforcement Zones" />
         <CardContent>
           <div className="space-y-3">
-            {[
-              { name: 'Silk Board Junction', distance: '1.2 km', speed: '40 km/h', type: 'Speed Restricted' },
-              { name: 'Outer Ring Road', distance: '2.8 km', speed: '60 km/h', type: 'School Zone' },
-              { name: 'Brigade Road', distance: '3.5 km', speed: '50 km/h', type: 'Commercial Area' },
-            ].map((zone, i) => (
+            {geoZones.map((zone, i) => (
               <div key={i} className="rounded-lg border border-dark-200 p-4 dark:border-dark-700">
                 <div className="flex items-start justify-between">
                   <div>
@@ -57,15 +54,28 @@ export default function GeoZonesPage() {
                       {zone.name}
                     </h4>
                     <div className="mt-2 space-y-1 text-sm text-dark-600 dark:text-dark-400">
-                      <p>Distance: {zone.distance}</p>
-                      <p>Speed Limit: {zone.speed}</p>
+                      <p>Speed Limit: {zone.speedLimit}</p>
+                      <p>{zone.description}</p>
                     </div>
                   </div>
                   <Badge variant="warning">{zone.type}</Badge>
                 </div>
+                <p className="mt-3 text-xs text-dark-500 dark:text-dark-400">
+                  Calculator impact: {zone.type === 'School Zone' ? 'up to 2x on speeding' : `${zone.fineMultiplier}x on relevant violations`}
+                </p>
               </div>
             ))}
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader title="How this connects to challans" />
+        <CardContent>
+          <p className="text-sm text-dark-700 dark:text-dark-300">
+            The geo-zone list now feeds the challan calculator. If a user is in a School Zone,
+            the calculator applies a stricter fine multiplier for matching violations like speeding.
+          </p>
         </CardContent>
       </Card>
     </div>
